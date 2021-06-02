@@ -43,17 +43,17 @@ func (client *FileProvisionerClient) Get() (*api.FileInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get failed, err: %s", err)
 	}
+
+	defer resp.Body.Close()
+	bodyContent, err := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		httpErr, rErr := ioutil.ReadAll(resp.Body)
-		if rErr != nil {
+		if err != nil {
 			return nil, fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err is unknown", resp.StatusCode)
 		}
-		return nil, fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(httpErr))
+		return nil, fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(bodyContent))
 	}
-	defer resp.Body.Close()
 
 	result := &api.FileInfo{}
-	bodyContent, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -80,14 +80,15 @@ func (client *FileProvisionerClient) Close() error {
 	if err != nil {
 		return fmt.Errorf("close failed, err: %s", err)
 	}
+
+	defer resp.Body.Close()
+	bodyContent, err := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		httpErr, rErr := ioutil.ReadAll(resp.Body)
-		if rErr != nil {
+		if err != nil {
 			return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err is unknown", resp.StatusCode)
 		}
-		return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(httpErr))
+		return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(bodyContent))
 	}
-	resp.Body.Close()
 
 	return nil
 }
@@ -135,14 +136,15 @@ func (client *FileProvisionerClient) Upload(filePath string) error {
 	if err != nil {
 		return fmt.Errorf("upload failed, err: %s", err)
 	}
+
+	defer resp.Body.Close()
+	bodyContent, err := ioutil.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		httpErr, rErr := ioutil.ReadAll(resp.Body)
-		if rErr != nil {
+		if err != nil {
 			return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err is unknown", resp.StatusCode)
 		}
-		return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(httpErr))
+		return fmt.Errorf("resp.StatusCode(%d) != http.StatusOK, err: %v", resp.StatusCode, string(bodyContent))
 	}
-	resp.Body.Close()
 
 	return nil
 }
